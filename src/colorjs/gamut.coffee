@@ -1,5 +1,6 @@
 gamut = colorjs.gamut = {}
 
+{pow} = Math
 {mod, polar, rectangular} = colorjs.mathutils
 {codepoints} = colorjs.strutils
 ciecam = colorjs.ciecam
