@@ -8,21 +8,33 @@ This is an early release: the API is likely to change somewhat going forward
 Examples
 --------
 
-Imagine we want to convert an RGB color from a computer to CIECAM02 space, halve its chroma and increase its lightness by 30, and then convert that result back to RGB:
+Imagine we want to convert an RGB color from a computer to CIECAM02 space, halve its chroma and increase its lightness by 30, and then convert that result back to RGB.
+
+First we need to set up converters for RGB and CIECAM02. By default, the CIECAM02 converter uses a 'D65' white point, just as sRGB does, so we can leave that parameter implicit.
 
     >>> sRGB = chromatist.rgb.Converter('sRGB')
     >>> CIECAM02 = chromatist.ciecam.Converter({ adaptive_luminance: 200 })
+
+Next we can define our color from hex, and convert it to XYZ space.
+
     >>> rgb_j = chromatist.rgb.from_hex('#001C35')   // a nice dark blue
     [ 0, 0.1098, 0.2078 ]
     >>> xyz_j = sRGB.to_XYZ(rgb_j)
     [ 1.0576, 1.0874, 3.5216 ]
+
+Now we convert our color to CIECAM02 space, and perform our manipulations, increasing lightness and halving chroma:
+
     >>> ciecam_j = CIECAM02.forward_model(xyz_j)
     { J: 7.919, C: 27.14, h: 245.3, Q: 55.44, M: 23.74, s: 65.43 }
     >>> ciecam_k = {J: ciecam_j.J + 30, C: ciecam_j.C / 2, h: ciecam_j.h}
     { J: 37.919, C: 13.57, h: 245.3 }
+
+Finally we can convert our new color back to RGB and print it out in 8-bit hexadecimal:
+
     >>> xyz_j = CIECAM02.reverse_model(ciecam_k).XYZ
     [ 16.122, 17.175, 23.101 ]
     >>> rgb_j = sRGB.from_XYZ(xyz_j)
     [ 0.4145, 0.4560, 0.5044 ]
     >>> hex_j = chromatist.rgb.to_hex(rgb_j)
-    '#6a7481'
+    '#6a7481'    // a kind of slate gray color
+
