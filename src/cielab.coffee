@@ -1,6 +1,6 @@
-cielab = colorjs.cielab = {}
+cielab = chromatist.cielab = {}
 
-{normalize_whitepoint} = colorjs.cie
+{normalize_whitepoint} = chromatist.cie
 {pow} = Math
 
 cielab.Converter = (white='D65') ->

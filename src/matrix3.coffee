@@ -1,4 +1,4 @@
-matrix3 = colorjs.matrix3 = {}
+matrix3 = chromatist.matrix3 = {}
 class Matrix3
     constructor: (matrix) ->
         @matrix = _.flatten(matrix)

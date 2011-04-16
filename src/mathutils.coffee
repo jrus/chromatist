@@ -1,4 +1,4 @@
-mathutils = colorjs.mathutils = {}
+mathutils = chromatist.mathutils = {}
 
 {sqrt, cos, sin, atan2, abs} = Math
 tau = Math.PI * 2

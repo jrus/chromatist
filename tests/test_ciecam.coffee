@@ -2,11 +2,11 @@ print = console.log
 repr = JSON.stringify
 
 _ = require 'underscore'
-colorjs = require '../lib/color.js'
+chromatist = require '../lib/chromatist'
 
-CIECAM = colorjs.ciecam
+CIECAM = chromatist.ciecam
 
-CIELAB = colorjs.cielab
+CIELAB = chromatist.cielab
 
 CIELAB_c = CIELAB.Converter([95.05, 100, 108.88])
 

@@ -1,8 +1,20 @@
-rgb = colorjs.rgb = {}
+rgb = chromatist.rgb = {}
 {max, pow, round} = Math
-{standard_whitepoints, normalize_chromaticity, normalize_whitepoint} = colorjs.cie
-{Matrix3} = colorjs.matrix3
+{standard_whitepoints, normalize_chromaticity, normalize_whitepoint} = chromatist.cie
+{Matrix3} = chromatist.matrix3
 
+##### XXX: This versions is somehow broken. The below one works though.
+# RGB_matrix_from_primaries = ({r, g, b, white}) ->
+#     # given chromaticity coordinates for the three primaries and the white
+#     # point, output a matrix which transforms XYZ to RGB, where XYZ are scaled
+#     # so that Y = 100 is the white point, (R, G, B) = (1, 1, 1)
+#     primaries = (new Matrix3(
+#         normalize_chromaticity(x) for x in [r, g, b])).transpose()
+#     white = normalize_whitepoint(white)
+#     c_rgb = primaries.inverse().dot(white)
+#     c_rgb = new Matrix3([c_rgb, c_rgb, c_rgb]) # three identical rows
+#     return c_rgb.dot(primaries).inverse()
+# 
 
 RGB_matrix_from_primaries = ({r, g, b, white}) ->
     # given chromaticity coordinates for the three primaries and the white
@@ -10,13 +22,16 @@ RGB_matrix_from_primaries = ({r, g, b, white}) ->
     # so that Y = 100 is the white point, (R, G, B) = (1, 1, 1)
     primaries = (new Matrix3(
         normalize_chromaticity(x) for x in [r, g, b])).transpose()
-    # console.log('primaries' + primaries)
+    [x_r, x_g, x_b
+     y_r, y_g, y_b
+     z_r, z_g, z_b] = primaries.flat()
     white = normalize_whitepoint(white)
-    # console.log('white: ' + white)
-    # console.log('.. ' + primaries.inverse().dot(white))
-    c_rgb = primaries.inverse().dot(white)
-    c_rgb = new Matrix3([c_rgb, c_rgb, c_rgb]) # three identical rows
-    return c_rgb.dot(primaries).inverse()
+    [c_r, c_g, c_b] = primaries.inverse().dot(white)
+    return (new Matrix3 [
+        c_r*x_r, c_g*x_g, c_b*x_b
+        c_r*y_r, c_g*y_g, c_b*y_b
+        c_r*z_r, c_g*z_g, c_b*z_b]).inverse()
+
 
 sRGB_gamma = [
     (x) ->

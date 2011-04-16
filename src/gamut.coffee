@@ -1,10 +1,10 @@
-gamut = colorjs.gamut = {}
+gamut = chromatist.gamut = {}
 
-{pow} = Math
-{mod, polar, rectangular} = colorjs.mathutils
-{codepoints} = colorjs.strutils
-ciecam = colorjs.ciecam
-rgb = colorjs.rgb
+{pow, abs} = Math
+{mod, polar, rectangular, interpolate} = chromatist.mathutils
+{codepoints} = chromatist.strutils
+ciecam = chromatist.ciecam
+rgb = chromatist.rgb
 tau = Math.PI * 2
 
 # create CIECAM and RGB converters. CIECAM based on some parameters relevant
@@ -38,37 +38,7 @@ gamut.bring_into_sRGB = do ->
         
         return XYZ
 
-
-# bring_into_sRGB2 = do ->
-# 
-#     iterations = 30
-# 
-#     return (XYZ1, XYZ2) ->
-#         {J1, C1, h1} = CIECAM.forward_model(XYZ1)
-#         {J2, C2, h2} = CIECAM.forward_model(XYZ2)
-#         
-#         XYZ = XYZ1
-#         
-#         if sRGB.in_gamut(XYZ)
-#             return XYZ
-#         
-#         prev_test = 0
-#         for i in [1..iterations]
-#             this_test = prev_test + pow(1/2, i)
-#             test_JCh =
-#                 J: interpolate(J1, J2, this_test)
-#                 C: interpolate(C1, C2, this_test)
-#                 h: circular_interpolate(h1, h2, 360, this_test)
-#             test_XYZ = CIECAM.reverse_model(test_JCh).XYZ
-#             if sRGB.in_gamut(test_XYZ)
-#                 prev_test = this_test
-#                 XYZ = test_XYZ
-#         
-#         return XYZ
-
-gamut.boundary = do ->
-    precision = 8
-    
+gamut.Boundary = (precision=64) ->
     encode_pt = (rgb) ->
         String.fromCharCode (x + 0x30 for x in rgb)...
     
@@ -142,8 +112,7 @@ gamut.boundary = do ->
     # output a list of points sorted by counterclockwise hue, for use in
     # drawing the sRGB gamut boundary at CIECAM lightness 'J'
     horizontal = (J=50) ->
-        output = []
-        for edge, [v1, J1, h1, v2, J2, h2] of edges
+        output = for edge, [v1, J1, h1, v2, J2, h2] of edges
             dist = distance(J1, J2, J)
             unless (0 <= dist <= 1)
                 continue  # make sure edge crosses horizontal plane
@@ -154,27 +123,24 @@ gamut.boundary = do ->
             b_Cx = interpolate(b_C1, b_C2, dist)
             [Cx, hx] = polar([a_Cx, b_Cx])
             hx = mod(hx, tau)
-            
-            output.push([a_Cx, b_Cx, hx])
+            [a_Cx, b_Cx, hx]
+        
         output.sort((a, b) -> a[2] - b[2]) # sort by angle
         return output
     
     # output a list of points sorted by counterclockwise hue, for use in
     # drawing the sRGB gamut boundary at CIECAM lightness 'J'
     vertical = (h=0) ->
-        output = [[0, 0], [100, 0]] # begin w/ pure black & pure white
-        for edge, [v1, J1, h1, v2, J2, h2] of edges
+        output = for edge, [v1, J1, h1, v2, J2, h2] of edges
             h = tau/360 * h
             dist = circular_distance(h1, h2, tau, h)
             unless (0 <= dist <= 1)
                 continue  # make sure edge crosses vertical plane
             [J1, C1, h1, a_C1, b_C1] = vertices[v1]
             [J2, C2, h2, a_C2, b_C2] = vertices[v2]
+            [interpolate(J1, J2, dist), interpolate(C1, C2, dist)]
             
-            Jx = interpolate(J1, J2, dist)
-            Cx = interpolate(C1, C2, dist)
-            
-            output.push([Jx, Cx])
+        output = output.concat([[0, 0], [100, 0]]) # add pure black & pure white
         output.sort((a, b) -> a[0] - b[0]) # sort by lightness
         return output
     

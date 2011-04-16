@@ -1,4 +1,4 @@
-{mod} = colorjs.mathutils
+{mod} = chromatist.mathutils
 
 _.mixin
     sum: (list) -> _.reduce(list, ((total, x) -> total + x), 0)

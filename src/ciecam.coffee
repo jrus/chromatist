@@ -1,10 +1,10 @@
-ciecam = colorjs.ciecam = {}
+ciecam = chromatist.ciecam = {}
 
 {atan2, sin, cos, exp, abs, sqrt, pow, round, floor} = Math
 tau = Math.PI * 2
-{sgn, mod, interpolate, circular_interpolate} = colorjs.mathutils
-{Matrix3} = colorjs.matrix3
-{standard_whitepoints} = colorjs.cie
+{sgn, mod, interpolate} = chromatist.mathutils
+{Matrix3} = chromatist.matrix3
+{standard_whitepoints} = chromatist.cie
 
 ciecam.Converter = (params) ->
     params = _(params or {}).defaults

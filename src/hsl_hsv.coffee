@@ -1,11 +1,8 @@
-hsl = colorjs.hsl = {} # hsl and hsv 2 separate "modules"
-hsv = colorjs.hsv = {}
-
-{mod, polar, rectangular} = colorjs.mathutils
-
+hsl = chromatist.hsl = {} # hsl and hsv 2 separate "modules"
+hsv = chromatist.hsv = {}
 
 {abs, max, min} = Math
-{mod} = colorjs.mathutils
+{mod} = chromatist.mathutils
 
 hsl.converter = do ->
     from_RGB = ([R, G, B]) ->

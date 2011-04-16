@@ -1,4 +1,4 @@
-cie = colorjs.cie = {}
+cie = chromatist.cie = {}
 
 standard_whitepoints = cie.standard_whitepoints =
     A:   [109.850, 100,  35.585]

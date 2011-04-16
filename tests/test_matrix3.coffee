@@ -1,5 +1,5 @@
-colorjs = require '../lib/color.js'
-{Matrix3} = colorjs.matrix3
+chromatist = require '../lib/chromatist'
+{Matrix3} = chromatist.matrix3
 assert = require 'assert'
 {assert_matrix_equal, assert_matrix_close} = require('./testutils')
 

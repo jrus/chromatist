@@ -1,4 +1,4 @@
-strutils = colorjs.strutils = {}
+strutils = chromatist.strutils = {}
 
 strutils.trim = (str) ->
     str.replace(/^\s+|\s+$/g, "")
