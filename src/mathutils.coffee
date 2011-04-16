@@ -9,7 +9,7 @@ mathutils.sgn = (x) ->
 # In JavaScript, the result of x % y always takes the sign of x. This can be
 # undesirable. This function’s result always takes the sign of y, instead.
 mathutils.mod = mod = (x, y) ->
-    if not ((js_mod = x % y) and (x > 0 ^ y > 0)) then js_mod
+    unless (js_mod = x % y) and (x > 0 ^ y > 0) then js_mod
     else js_mod + y
 
 # convert degrees to radians
@@ -19,12 +19,10 @@ mathutils.radians = (x) -> x * tau / 360
 mathutils.degrees = (x) -> x * 360 / tau
 
 # convert polar coordinates to rectangular coordinates
-mathutils.rectangular = ([r, a]) ->
-    return [r * cos(a), r * sin(a)]
+mathutils.rectangular = ([r, a]) -> [r * cos(a), r * sin(a)]
 
 # convert rectangular coordinates to polar coordinates
-mathutils.polar = ([x, y]) ->
-    return [sqrt(x*x + y*y), atan2(y, x)]
+mathutils.polar = ([x, y]) -> [sqrt(x*x + y*y), atan2(y, x)]
 
 # interpolate between numbers
 mathutils.interpolate = interpolate = (x_0, x_1, fraction) ->

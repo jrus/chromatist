@@ -11,4 +11,3 @@ _.mixin
         (list0 = Array.prototype.slice.call(list, 0, m)).unshift(n, 0)
         (output = Array.prototype.slice.call(list, m)).splice(list0...)
         return output    
-    

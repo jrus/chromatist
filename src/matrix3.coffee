@@ -1,6 +1,6 @@
 matrix3 = chromatist.matrix3 = {}
 
-# right justify a string
+# right justify a string, padding it on the left by the 'pad' character
 rjust = (str, len, pad=' ') ->
     diff = len - str.length
     return if diff <= 0 then str else Array(diff).concat(str).join(pad)
@@ -103,19 +103,19 @@ class Matrix3
         return "[#{printed_rows.join(',\n ')}]"
     
     @identity: ->
-        return new @ [
+        new @ [
             1, 0, 0
             0, 1, 0
             0, 0, 1]
     
     @zeros: ->
-        return new @ [
+        new @ [
             0, 0, 0
             0, 0, 0
             0, 0, 0]
 
     @ones: ->
-        return new @ [
+        new @ [
             1, 1, 1
             1, 1, 1
             1, 1, 1]
