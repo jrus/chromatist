@@ -45,7 +45,7 @@ ProPhoto_gamma = [
         if x < .001953125 then 16 * x
         else pow(x, 1/1.8)
     (x_) ->
-        if x_ < 16 * .001953125 then x / 16
+        if x_ < 16 * .001953125 then x_ / 16
         else pow(x_, 1.8) ]
 
 RGB_spaces_parameters =
