@@ -13,8 +13,8 @@ ansi =
 source_dir = 'src/'
 index_source = 'chromatist'
 sources = [
-    'strutils', 'mathutils', 'underscore_mixins', 'matrix3'
-    'cie', 'rgb', 'hsl_hsv', 'cielab', 'ciecam', 'gamut'
+    'mathutils', 'underscore_mixins', 'matrix3', 'cie',
+    'rgb', 'hsl_hsv', 'cielab', 'ciecam', 'gamut'
 ]
 output_filename = "./lib/chromatist.js"
 

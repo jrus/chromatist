@@ -3,8 +3,9 @@ assert = require "assert"
 {assert_close, assert_angle_close,
  assert_array_close, assert_polar_coords_close} = require './testutils'
 
+chromatist = require '../lib/chromatist'
 {sgn, mod, radians, degrees, rectangular, polar,
- interpolate, circular_interpolate} = require '../mathutils'
+ interpolate, circular_interpolate} = chromatist.mathutils
 
 {sqrt} = Math
 # {sqrt, cos, sin, atan2, abs} = Math

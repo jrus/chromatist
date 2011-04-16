@@ -1,4 +1,11 @@
 matrix3 = chromatist.matrix3 = {}
+
+# right justify a string
+rjust = (str, len, pad=' ') ->
+    diff = len - str.length
+    return if diff <= 0 then str else Array(diff).concat(str).join(pad)
+
+
 class Matrix3
     constructor: (matrix) ->
         @matrix = _.flatten(matrix)
@@ -86,10 +93,6 @@ class Matrix3
     scalar_multiply: (a) ->
         new Matrix3 (x * a for x in @matrix)
         
-    rjust = (str, len, pad=' ') ->
-        diff = len - str.length
-        return if diff <= 0 then str else Array(diff).concat(str).join(pad)
-    
     toString: (precision) ->
         precision ?= 3
         fixed = (x.toFixed(precision) for x in @matrix)

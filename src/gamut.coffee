@@ -2,10 +2,14 @@ gamut = chromatist.gamut = {}
 
 {pow, abs} = Math
 {mod, polar, rectangular, interpolate} = chromatist.mathutils
-{codepoints} = chromatist.strutils
 ciecam = chromatist.ciecam
 rgb = chromatist.rgb
 tau = Math.PI * 2
+
+# convert a string to a list of code points
+codepoints = (str) ->
+    (str.charCodeAt(i) for i in [0...str.length])
+
 
 # create CIECAM and RGB converters. CIECAM based on some parameters relevant
 # to computer displays.
