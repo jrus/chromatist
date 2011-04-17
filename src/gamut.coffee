@@ -15,8 +15,8 @@ codepoints = (str) ->
 # to computer displays.
 sRGB = rgb.Converter('sRGB')
 disp_CIECAM = ciecam.Converter(
-    adapting_luminance: 200
-    discounting: true) # TODO: figure out proper L_A for computer displays
+    adapting_luminance: 50
+    discounting: true)
 
 gamut.bring_into_sRGB = do ->
     iterations = 30

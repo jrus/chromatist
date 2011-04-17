@@ -8,33 +8,35 @@ This is an early release: the API is likely to change somewhat going forward
 Examples
 --------
 
-Imagine we want to convert an RGB color from a computer to CIECAM02 space, halve its chroma and increase its lightness by 30, and then convert that result back to RGB.
+Imagine we want to convert a blue color taken from a website from RGB to CIECAM02 space, take the color with complementary hue, 1.5 times the chroma, and lightness 80, and then convert that result back to RGB.
 
 First we need to set up converters for RGB and CIECAM02. By default, the CIECAM02 converter uses a 'D65' white point, just as sRGB does, so we can leave that parameter implicit.
 
     >>> sRGB = chromatist.rgb.Converter('sRGB')
-    >>> CIECAM02 = chromatist.ciecam.Converter({ adaptive_luminance: 200 })
+    >>> CIECAM02 = chromatist.ciecam.Converter({
+    ...   adaptive_luminance: 50,
+    ...   discounting: true })
 
 Next we can define our color from hex, and convert it to XYZ space.
 
-    >>> rgb_j = chromatist.rgb.from_hex('#001C35')   // a nice dark blue
-    [ 0, 0.1098, 0.2078 ]
+    >>> rgb_j = chromatist.rgb.from_hex('#14214D')    // a nice dark blue
+    [ 0.0784, 0.1294, 0.3020 ]
     >>> xyz_j = sRGB.to_XYZ(rgb_j)
-    [ 1.0576, 1.0874, 3.5216 ]
+    [ 2.171, 1.772, 7.247 ]
 
-Now we convert our color to CIECAM02 space, and perform our manipulations, increasing lightness and halving chroma:
+Now we convert our color to CIECAM02 space, and perform our manipulations:
 
-    >>> ciecam_j = CIECAM02.forward_model(xyz_j)
-    { J: 7.919, C: 27.14, h: 245.3, Q: 55.44, M: 23.74, s: 65.43 }
-    >>> ciecam_k = {J: ciecam_j.J + 30, C: ciecam_j.C / 2, h: ciecam_j.h}
-    { J: 37.919, C: 13.57, h: 245.3 }
+    >>> ccam_j = CIECAM02.forward_model(xyz_j)
+    { J: 10.51, C: 33.92, h: 262.5, Q: 63.91, M: 29.66, s: 68.12 }
+    >>> ccam_k = {J: 80, C: ccam_j.C * 1.5, h: ccam_j.h - 180}
+    { J: 80, C: 50.88, h: 82.5 }
 
 Finally we can convert our new color back to RGB and print it out in 8-bit hexadecimal:
 
-    >>> xyz_j = CIECAM02.reverse_model(ciecam_k).XYZ
-    [ 16.122, 17.175, 23.101 ]
-    >>> rgb_j = sRGB.from_XYZ(xyz_j)
-    [ 0.4145, 0.4560, 0.5044 ]
-    >>> hex_j = chromatist.rgb.to_hex(rgb_j)
-    '#6a7481'    // a kind of slate gray color
+    >>> xyz_k = CIECAM02.reverse_model(ccam_k).XYZ
+    [ 63.85, 64.63, 18.37 ]
+    >>> rgb_k = sRGB.from_XYZ(xyz_k)
+    [ 0.9929, 0.7985, 0.3455 ]
+    >>> hex_k = chromatist.rgb.to_hex(rgb_k)
+    '#fdcc58'    // a nice bright yellow
 
