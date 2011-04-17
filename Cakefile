@@ -44,3 +44,4 @@ task 'build', 'build the main chromatist library', (options) ->
         """    
     fs.writeFileSync output_filename, output_script, 'utf-8'
     log "saved compiled source in #{output_filename}"
+    log 'DONE'

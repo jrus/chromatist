@@ -1,7 +1,7 @@
 Chromatist JavaScript Library
 =============================
 
-The Chromatist library aims to pull together implementations of useful color space math, for use both in the browser and in node-based servers. In particular, it currently has implementations of RGB ⇔ CIEXYZ conversions (in `chromatist.rgb`), CIECAM02 (in `chromatist.ciecam`), CIELAB (in `chromatist.cielab`), and HSL and HSV (in `chromatist.hsl` and `chromatist.hsv`). There is a simple gamut mapping tool in `chromatist.gamut` which finds a point of lower chroma but the same hue and lightness within the sRGB gamut using a bisection algorithm.
+The Chromatist library aims to pull together implementations of useful color space math, for use both in the browser and in node-based servers. In particular, it currently has implementations of RGB ⇔ CIEXYZ conversions (in `chromatist.rgb`), CIECAM02 (in `chromatist.ciecam`), CIELAB (in `chromatist.cielab`), and HSL and HSV (in `chromatist.hsl` and `chromatist.hsv`). There is a simple gamut mapping tool in `chromatist.gamut` which finds a point of lower chroma but the same hue and lightness within the sRGB gamut using a bisection algorithm. `chromatist.matrix3` includes a class for 3 by 3 matrices, and `chromatist.mathutils` includes a few useful math routines.
 
 This is an early release: the API is likely to change somewhat going forward
 
