@@ -7,6 +7,7 @@ log = console.log
 
 # ANSI Terminal Colors.
 ansi =
+    boldblue  : '\033[1;34m'
     boldgreen : '\033[1;32m'
     reset     : '\033[0m'
 
@@ -21,7 +22,8 @@ output_filename = "./lib/chromatist.js"
 compile = (filename, options) ->
     source_path = source_dir + filename + '.coffee'
     content = fs.readFileSync source_path, 'utf-8'
-    output = CoffeeScript.compile content, options
+    output = "/* #{filename}.coffee */\n"
+    output += CoffeeScript.compile content, options
     log "#{ansi.boldgreen}compiled#{ansi.reset} #{source_path}"
     return output
 
@@ -44,4 +46,4 @@ task 'build', 'build the main chromatist library', (options) ->
         """    
     fs.writeFileSync output_filename, output_script, 'utf-8'
     log "saved compiled source in #{output_filename}"
-    log 'DONE'
+    log "#{ansi.boldblue}DONE#{ansi.reset}"
