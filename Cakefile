@@ -1,6 +1,5 @@
 fs = require 'fs'
 CoffeeScript = require 'coffee-script'
-jade = require 'jade'
 chromatist = require './lib/chromatist'
 
 log = console.log
