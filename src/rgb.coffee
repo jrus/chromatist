@@ -134,18 +134,17 @@ rgb.Converter = (params) ->
         in_gamut }
 
 
-zero_pad = (str, len) ->
-    Array(max(len - str.length, 0) + 1).join('0') + str
-
 rgb.to_hex = ([R, G, B]) ->
     unless 0 <= R <= 1 and 0 <= G <= 1 and 0 <= B <= 1
         throw new Error('Bad Input: R, G, and B must be in range [0, 1]')
-
-    return '#' + zero_pad(
-        ((round(0xff * R) << 16) +
-         (round(0xff * G) << 8) +
-         (round(0xff * B))).toString(16),
-        6)
+    
+    # add 0x1000000 + 0x0rr0000 + 0x000gg00 + 0x0000bb, then convert to a
+    # hex string, and replace the leading 1 with a '#'
+    return '#' + (
+        1               << 24 |
+        round(0xff * R) << 16 |
+        round(0xff * G) <<  8 |
+        round(0xff * B)).toString(16).slice(1)
 
 rgb.from_hex = (hex) ->
     unless /^#?[0-9a-fA-F]{6}$/.test(hex)

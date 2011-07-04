@@ -47,7 +47,7 @@ class Matrix3
     
     # return a function which left-multiplies a column vector by the matrix
     linear_transform: ->
-        if @_lt? then return @_lt
+        if @_lt? then return @_lt # look up cached value
         [M00, M01, M02
          M10, M11, M12
          M20, M21, M22] = @matrix
