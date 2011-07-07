@@ -82,7 +82,7 @@ hunt_test = ->
         Hcomp: Hcomp = CIECAM.hue_comp(H)
         H2: CIECAM.parse_hue_comp(Hcomp))
     output += repr(correlates) + '\n'
-    
+
     output += repr([19.31, 23.93, 10.14]) + '\n'
     output += repr(converter.reverse_model(
         J: correlates.J

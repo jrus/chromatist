@@ -16,7 +16,7 @@ standard_whitepoints = cie.standard_whitepoints =
 
 cie.normalize_chromaticity = (c) ->
     # normalize so x + y + z = 1. Assume input is either the chromaticity
-    # coordinates (x, y), or else a triple (x, y, z) or (X, Y, Z). 
+    # coordinates (x, y), or else a triple (x, y, z) or (X, Y, Z).
     unless _.isArray(c) and c.length in [2, 3]
         throw new Error('Unrecognized chromaticity')
     if c.length == 2
@@ -46,6 +46,6 @@ cie.normalize_whitepoint = (white) ->
             white = [w_x, w_y, 1 - w_x - w_y]
     else
         throw new Error('Unrecognized whitepoint')
-    
+
     [w_x, w_y, w_z] = white
     return (comp * 100 / w_y for comp in white) # normalize Y component to 100

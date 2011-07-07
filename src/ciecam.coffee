@@ -14,7 +14,7 @@ ciecam.Converter = (params) ->
         background_luminance: 20  # Y_b; relative to Y_w = 100
         surround: 'average'
         discounting: false
-    
+
     M_CAT02 = new Matrix3 [
          .7328,  .4296, -.1624,
         -.7036, 1.6975,  .0061,
@@ -28,15 +28,15 @@ ciecam.Converter = (params) ->
     CAT02_to_XYZ = M_CAT02.inverse().linear_transform()
     CAT02_to_HPE = M_HPE.dot(M_CAT02.inverse()).linear_transform()
     HPE_to_CAT02 = M_CAT02.dot(M_HPE.inverse()).linear_transform()
-    
+
     # require that the whitepoint is an array or else a recognized string
     XYZ_w = standard_whitepoints[params.whitepoint] or params.whitepoint
     throw new Error('Invalid whitepoint') unless _.isArray(XYZ_w)
-    
+
     L_A = params.adapting_luminance
     Y_b = params.background_luminance
     Y_w = XYZ_w[1]
-    
+
     surround =
         if _.isNumber(params.surround) then params.surround
         else switch params.surround
@@ -44,14 +44,14 @@ ciecam.Converter = (params) ->
             when 'dim'     then 1
             when 'average' then 2
             else new Error('Invalid surround')
-    
+
     if surround < 1
         c = interpolate(.525, .59, surround)
         N_c = F = interpolate(.8, .9, surround)
     else
         c = interpolate(.59, .69, surround - 1)
         N_c = F = interpolate(.9, 1.0, surround - 1)
-    
+
     k = 1 / (5*L_A + 1)
     F_L = (.2 * pow(k, 4) * 5 * L_A +
            .1 * pow(1 - pow(k, 4), 2) * pow(5 * L_A, 1/3))
@@ -60,38 +60,38 @@ ciecam.Converter = (params) ->
     z = 1.48 + sqrt(n)
     D = 1 if params.discounting
     D ?= F * (1 - 1 / 3.6 * exp(-(L_A + 42) / 92))
-    
+
     RGB_w = XYZ_to_CAT02(XYZ_w)
     [D_R, D_G, D_B] = (interpolate(1, 100/component, D) for component in RGB_w)
-    
+
     corresponding_colors = (XYZ) ->
         # Find R_c, G_c, B_c: corresponding colors after chromatic adaptation,
         # in CAT02 space
         [R, G, B] = XYZ_to_CAT02(XYZ)
         return [D_R * R, D_G * G, D_B * B]
-    
+
     reverse_corresponding_colors = ([R_c, G_c, B_c]) ->
         # Convert post-adpatation corresponding colors in CAT02 space to XYZ
         return CAT02_to_XYZ([R_c / D_R, G_c / D_G, B_c / D_B])
-    
+
     adapted_response = (HPE_component) ->
         x = pow(F_L * abs(HPE_component) / 100, .42) # temp variable
         return sgn(HPE_component) * 400 * x / (27.13 + x) + .1
-    
+
     adapted_responses = (RGB_c) ->
         # Convert corresponding colors R_c, G_c, B_c to HPE space, and apply
         # the proper nonlinearity to arrive at adapted cone responses.
         (adapted_response(component) for component in CAT02_to_HPE(RGB_c))
-    
+
     reverse_adapted_response = (adapted_component) ->
         x = adapted_component - .1 # temp variable
         return sgn(x) * 100 / F_L * pow(27.13 * abs(x) / (400 - abs(x)), 1/.42)
-    
+
     reverse_adapted_responses = (RGB_a) ->
         # Convert adapted cone responses R_a, G_a, B_a to corresponding colors
         # in CAT02 space, first applying the proper nonlinearity.
         HPE_to_CAT02(reverse_adapted_response(component) for component in RGB_a)
-    
+
     achromatic_response = ([R_a, G_a, B_a]) ->
         # Find the achromatic response A, given the adapted cone responses.
         (R_a * 2 + G_a + B_a / 20 - .305) * N_bb
@@ -99,13 +99,13 @@ ciecam.Converter = (params) ->
     RGB_cw = corresponding_colors(XYZ_w)
     RGB_aw = adapted_responses(RGB_cw)
     A_w = achromatic_response(RGB_aw)
-    
+
     forward_model = (XYZ) ->
         # Return lightness, chroma, hue for a given color in XYZ space.
-        
+
         RGB_c = corresponding_colors(XYZ)
         [R_a, G_a, B_a] = RGB_a = adapted_responses(RGB_c)
-        
+
         a = R_a - G_a * 12 / 11 + B_a / 11
         b = (R_a + G_a - 2 * B_a) / 9
         h_rad = atan2(b, a)           # hue in radians
@@ -121,36 +121,36 @@ ciecam.Converter = (params) ->
         s = 100 * sqrt(M / Q)
 
         return {J, C, h, Q, M, s}
-    
+
     reverse_model = (inputs) ->
         {Q, M, J, C, s, h} = inputs
         unless ((J? + Q? == 1) and (M? + C? + s? == 1) and h?)
             # need exactly one of each of {J, Q}, {M, C, s}, {h}
             throw new Error('Need exactly three model inputs')
-        
+
         h = mod(h, 360)
         h_rad = h * tau/360 # radians
-        
+
         # fill in missing {Q, J, M, C, s} from the ones available
         J ?= 6.25 * pow(c * Q / ((A_w + 4) * pow(F_L, .25)), 2)
         Q ?= 4/c * sqrt(J/100) * (A_w + 4) * pow(F_L, .25)
         C ?= if M? then M / pow(F_L, .25) else pow(s / 100, 2) * Q / pow(F_L, .25)
         M ?= C * pow(F_L, .25)
         s ?= 100 * sqrt(M / Q)
-        
+
         t = pow(C / (sqrt(J / 100) * pow(1.64 - pow(.29, n), .73)), 10 / 9)
         e_t = 1 / 4 * (cos(h_rad + 2) + 3.8)
         A = A_w * pow(J / 100, 1 / c / z)
-        
+
         p_1 = 5e4 / 13 * N_c * N_cb * e_t / t
         p_2 = A / N_bb + .305
         q_1 = p_2 * 61/20 * 460/1403
         q_2 = 61/20 * 220/1403
         q_3 = 21/20 * 6300/1403 - 27/1403
-        
+
         sin_h = sin(h_rad)
         cos_h = cos(h_rad)
-        
+
         if t == 0
             a = b = 0
         else if abs(sin_h) >= abs(cos_h) # |b| > |a|
@@ -159,16 +159,16 @@ ciecam.Converter = (params) ->
         else
             a = q_1 / (p_1 / cos_h + q_2 + q_3 * sin_h / cos_h)
             b = a * sin_h / cos_h
-        
+
         RGB_a = [
              20/61 * p_2 + 451/1403 * a +  288/1403 * b
              20/61 * p_2 - 891/1403 * a -  261/1403 * b
              20/61 * p_2 - 220/1403 * a - 6300/1403 * b]
         RGB_c = reverse_adapted_responses(RGB_a)
         XYZ = reverse_corresponding_colors(RGB_c)
-        
+
         return {J, C, h, Q, M, s, XYZ}
-    
+
     return {forward_model, reverse_model}
 
 
@@ -225,13 +225,13 @@ ciecam.parse_hue_comp = (comp) ->
     [whole_match, s_uniq, amt_j, s_j, amt_k, s_k] = comp.match(hue_comp_re)
     throw new Error('Unrecognized hue composition') unless whole_match?
     return unique_hues_s.indexOf(s_uniq) * 100 if s_uniq? # cardinal hue
-    
+
     [j, k] = [unique_hues_s.indexOf(s_j), unique_hues_s.indexOf(s_k)]
     throw new Error('Hues must be neighbors') if abs(j - k) in [0, 2]
-    
+
     # if k is smaller than j, swap j and k
     [j, k, amt_j, amt_k] = [k, j, amt_k, amt_j] if (k + 1) % 4 == j
     [amt_j, amt_k] = [parseFloat(amt_j), parseFloat(amt_k)]
     throw new Error('Hue comp must sum to 100') if abs(amt_j + amt_k - 100) > 1
-    
+
     return 100 * j + amt_k

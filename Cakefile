@@ -13,9 +13,16 @@ ansi =
 source_dir = 'src/'
 index_source = 'chromatist'
 sources = [
-    'mathutils', 'underscore_mixins', 'matrix3', 'cie',
-    'rgb', 'hsl_hsv', 'cielab', 'ciecam', 'gamut'
-]
+    'mathutils'
+    'underscore_mixins'
+    'matrix3'
+    'cie'
+    'rgb'
+    'hsl_hsv'
+    'cielab'
+    'ciecam'
+    'gamut'
+    ]
 output_filename = "./lib/chromatist.js"
 
 compile = (filename, options) ->
@@ -29,10 +36,10 @@ compile = (filename, options) ->
 header = """
     /**
      * Chromatist JavaScript library v#{chromatist.VERSION}
-     * 
+     *
      * Copyright 2011, Jacob Rus
      */
-         """
+    """
 
 task 'build', 'build the main chromatist library', (options) ->
     output = [compile index_source, {bare: true}] # compile the first script "bare"
@@ -42,7 +49,16 @@ task 'build', 'build the main chromatist library', (options) ->
         (function() {
         #{output.join '\n'}
         }).call(this);
-        """    
+        """
     fs.writeFileSync output_filename, output_script, 'utf-8'
     log "saved compiled source in #{output_filename}"
     log "#{ansi.boldblue}DONE#{ansi.reset}"
+
+task 'watch_and_build', 'watch the source files and recompile on change', ->
+    invoke 'build'
+    all_sources = [index_source].concat sources
+    for source in all_sources
+        source_path = source_dir + source + '.coffee'
+        fs.watchFile source_path, {persistent: true, interval: 500}, (curr, prev) ->
+            return if curr.size is prev.size and +curr.mtime is +prev.mtime
+            invoke 'build'
