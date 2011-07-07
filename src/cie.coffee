@@ -27,6 +27,7 @@ cie.normalize_chromaticity = (c) ->
     else if c.length == 3
         return (x / _.sum(c) for x in c) # x + y + z = 1
 
+
 cie.normalize_whitepoint = (white) ->
     # normalize so Y component is 100. Assume input is either a string (one of
     # the known standard illuminants), or the chromaticity coordinates (x, y),

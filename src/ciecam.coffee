@@ -6,6 +6,7 @@ tau = Math.PI * 2
 {Matrix3} = chromatist.matrix3
 {standard_whitepoints} = chromatist.cie
 
+
 ciecam.Converter = (params) ->
     params = _(params or {}).defaults
         whitepoint: 'D65'
@@ -170,11 +171,13 @@ ciecam.Converter = (params) ->
     
     return {forward_model, reverse_model}
 
+
 # Table of unique hue data
 unique_hues_s = [   'R',    'Y',    'G',    'B',    'R'] # symbol
 unique_hues_h = [ 20.14,  90.00, 164.25, 237.53, 380.14] # unique hue
 unique_hues_e = [    .8,     .7,    1.0,    1.2,     .8] # eccentricity
 unique_hues_H = [     0,    100,    200,    300,    400] # hue quadrature
+
 
 ciecam.hue_quad = (h) ->
     # Return the "hue quadrature" for a hue given in degrees.
@@ -186,6 +189,7 @@ ciecam.hue_quad = (h) ->
     H_j = unique_hues_H[j]
     return H_j + 100 * dist_j / (dist_j + dist_k)
 
+
 ciecam.inverse_hue_quad = (H) ->
     H = mod(H, 400)
     j = floor(H / 100) # which quadrant
@@ -196,6 +200,7 @@ ciecam.inverse_hue_quad = (H) ->
          (amt * (e_k - e_j) - 100 * e_k))
     return mod(h, 360)
 
+
 ciecam.hue_comp = (H) ->
     # Return the "hue composition" given hue quadrature.
     H = mod(round(H), 400)
@@ -203,6 +208,7 @@ ciecam.hue_comp = (H) ->
     amt = H % 100
     [s_j, s_k] = unique_hues_s[j..j+1]
     return if amt == 0 then "100#{s_j}" else "#{amt}#{s_k} #{100-amt}#{s_j}"
+
 
 hue_comp_re = do ->
     # capturing groups: (1) symbol if a unique hue, or else...
@@ -213,6 +219,7 @@ hue_comp_re = do ->
     num_and_sym = number + space + symbol
     cardinal_hue = '100(?:[.]0*)?' + space + symbol
     return new RegExp(cardinal_hue + '|' + num_and_sym + space + num_and_sym)
+
 
 ciecam.parse_hue_comp = (comp) ->
     [whole_match, s_uniq, amt_j, s_j, amt_k, s_k] = comp.match(hue_comp_re)

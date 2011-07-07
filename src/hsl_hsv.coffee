@@ -4,6 +4,7 @@ hsv = chromatist.hsv = {}
 {abs, max, min} = Math
 {mod} = chromatist.mathutils
 
+
 hsl.converter = do ->
     from_RGB = ([R, G, B]) ->
         unless 0 <= R <= 1 and 0 <= G <= 1 and 0 <= B <= 1
@@ -15,13 +16,13 @@ hsl.converter = do ->
             if      C == 0 then null             # use conditional for temporary
             else if M == R then (G - B) / C      # piecewise definition of H in
             else if M == G then (B - R) / C + 2  # range [0, 6)
-            else                (R - G) / C + 4  
+            else                (R - G) / C + 4
         H = (H % 6) * 60                         # express H in degrees [0, 360)
         L = (M + m) / 2
         S = if C == 0 then 0 else C / (1 - abs(2 * L - 1))
         return [H, S, L]
 
-    to_RGB = ([H, S, L]) ->      
+    to_RGB = ([H, S, L]) ->
         unless 0 <= L <= 1 and 0 <= S <= 1
             throw new Error('Bad Input: L and S must be in range [0, 1]')
         if S == 0                                        # achromatic; short circuit
@@ -35,12 +36,13 @@ hsl.converter = do ->
         R = G = B = L - C/2                         # set R = G = B = min, for now
 
         H = ~~H                                     # truncate H for use as index
-        R += [C, X, 0, 0, X, C][H]  # define R, G, B piecewise: 
+        R += [C, X, 0, 0, X, C][H]  # define R, G, B piecewise:
         G += [X, C, C, X, 0, 0][H]  #   min = min + 0, mid = min + X,
         B += [0, 0, X, C, C, X][H]  #   max = min + C
         return [R, G, B]
 
     return {from_RGB, to_RGB}
+
 
 hsv.converter = do ->
     from_RGB = ([R, G, B]) ->
@@ -53,7 +55,7 @@ hsv.converter = do ->
             if      C == 0 then null             # use conditional for temporary
             else if M == R then (G - B) / C      # piecewise definition of H in
             else if M == G then (B - R) / C + 2  # range [0, 6)
-            else                (R - G) / C + 4  
+            else                (R - G) / C + 4
         H = (H % 6) * 60                         # express H in degrees [0, 360)
         S = if C == 0 then 0 else C / V
         return [H, S, V]
@@ -72,7 +74,7 @@ hsv.converter = do ->
         R = G = B = V - C            # set R = G = B = min, temporarily
 
         H = ~~H                      # truncate H for use as index
-        R += [C, X, 0, 0, X, C][H]   # define R, G, B piecewise: 
+        R += [C, X, 0, 0, X, C][H]   # define R, G, B piecewise:
         G += [X, C, C, X, 0, 0][H]   #   min = min + 0, mid = min + X,
         B += [0, 0, X, C, C, X][H]   #   max = min + C
         return [R, G, B]

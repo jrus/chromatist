@@ -1,5 +1,6 @@
 matrix3 = chromatist.matrix3 = {}
 
+
 # right justify a string, padding it on the left by the 'pad' character
 rjust = (str, len, pad=' ') ->
     diff = len - str.length
@@ -10,41 +11,41 @@ class Matrix3
     constructor: (matrix) ->
         @matrix = _.flatten(matrix)
         unless @matrix.length == 9
-            throw new Error('A 3 by 3 Matrix must have 9 entries') 
+            throw new Error('A 3 by 3 Matrix must have 9 entries')
         @shape = [3, 3]
-    
+
     determinant: ->
         if @_determinant? then return @_determinant # look-up cached value
 
         [M00, M01, M02
          M10, M11, M12
          M20, M21, M22] = @matrix
-        
+
         return @_determinant = (
             M00 * (M22*M11 - M21*M12) +
             M10 * (M21*M02 - M22*M01) +
             M20 * (M12*M01 - M11*M02))
-    
+
     inverse: ->
         c = 1 / @determinant()
         [M00, M01, M02
          M10, M11, M12
          M20, M21, M22] = @matrix
-        
+
         return new Matrix3 [
             (M22*M11 - M21*M12)*c, (M21*M02 - M22*M01)*c, (M12*M01 - M11*M02)*c
             (M20*M12 - M22*M10)*c, (M22*M00 - M20*M02)*c, (M10*M02 - M12*M00)*c
             (M21*M10 - M20*M11)*c, (M20*M01 - M21*M00)*c, (M11*M00 - M10*M01)*c]
-    
+
     rows: ->
         [@matrix[0...3], @matrix[3...6], @matrix[6...9]]
 
     flat: ->
         @matrix
-    
+
     transpose: ->
         new Matrix3(_.zip(@rows()...))
-    
+
     # return a function which left-multiplies a column vector by the matrix
     linear_transform: ->
         if @_lt? then return @_lt # look up cached value
@@ -55,7 +56,7 @@ class Matrix3
             [M00*v0 + M01*v1 + M02*v2
              M10*v0 + M11*v1 + M12*v2
              M20*v0 + M21*v1 + M22*v2]
-    
+
     # multiply two 3x3 matrices
     _matrix_multiply: (other) ->
         [M00, M01, M02
@@ -77,22 +78,22 @@ class Matrix3
         else if other.length == 3
             return @linear_transform()(other)
         throw new Error("Don't know how to dot with this object.")
-    
-    
+
+
     # apply the 2-input operation to the entries of this and the other matrix,
     # and put the output in a new matrix
     elementwise: (other, operation) ->
         new Matrix3(operation(elem, other.matrix[i]) for elem, i in @matrix)
-    
+
     multiply_elements: (other) ->
         @elementwise(other, (x, y) -> x * y)
 
     add: (other) ->
         @elementwise(other, (x, y) -> x + y)
-    
+
     scalar_multiply: (a) ->
         new Matrix3 (x * a for x in @matrix)
-        
+
     toString: (precision) ->
         precision ?= 3
         fixed = (x.toFixed(precision) for x in @matrix)
@@ -101,13 +102,13 @@ class Matrix3
         rows = [fixed[0...3], fixed[3...6], fixed[6...9]]
         printed_rows = ('[' + row.join(', ') + ']' for row in rows)
         return "[#{printed_rows.join(',\n ')}]"
-    
+
     @identity: ->
         new @ [
             1, 0, 0
             0, 1, 0
             0, 0, 1]
-    
+
     @zeros: ->
         new @ [
             0, 0, 0

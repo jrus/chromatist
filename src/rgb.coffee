@@ -14,7 +14,7 @@ rgb = chromatist.rgb = {}
 #     c_rgb = primaries.inverse().dot(white)
 #     c_rgb = new Matrix3([c_rgb, c_rgb, c_rgb]) # three identical rows
 #     return c_rgb.dot(primaries).inverse()
-# 
+
 
 RGB_matrix_from_primaries = ({r, g, b, white}) ->
     # given chromaticity coordinates for the three primaries and the white
@@ -48,6 +48,7 @@ ProPhoto_gamma = [
         if x_ < 16 * .001953125 then x_ / 16
         else pow(x_, 1.8) ]
 
+
 RGB_spaces_parameters =
     'sRGB':
         r: [.64, .33]
@@ -58,7 +59,7 @@ RGB_spaces_parameters =
         r: [.64, .33]
         g: [.21, .71]
         b: [.15, .06]
-        gamma: 2.2  
+        gamma: 2.2
     'Apple RGB':
         r: [.625, .340]
         g: [.280, .595]
@@ -87,13 +88,13 @@ rgb.Converter = (params) ->
     # Note: assumes white point of X, Y, Z values is the same as the white
     # point for the RGB space. If that's untrue, use a chromatic adaptation
     # transform first.
-    
+
     params ?= 'sRGB' # default to sRGB if no space specified
-    
+
     if _.isString(params) # allow users to call with a color space name
         params = RGB_spaces_parameters[params]
         throw new Error('Unrecognized name for RGB space') unless params?
-    
+
     # defaults = sRGB primaries, D65 white point, simple 2.2 gamma
     params = _(params).defaults
         r: [.64, .33]
@@ -101,7 +102,7 @@ rgb.Converter = (params) ->
         b: [.15, .06]
         white: 'D65'
         gamma: 2.2
-    
+
     g = params.gamma
     if _.isNumber(g) # for "simple gamma"
         [decoding_gamma, encoding_gamma] = [g, 1 / g]
@@ -111,23 +112,23 @@ rgb.Converter = (params) ->
         [gamma_encode, gamma_decode] = g
     else
         throw new Error('Unrecognized gamma')
-    
+
     matrix = RGB_matrix_from_primaries(params) # needs `r`, `g`, `b`, `white`
     from_XYZ_linear = matrix.linear_transform()
     to_XYZ_linear = matrix.inverse().linear_transform()
-    
+
     from_XYZ = (XYZ) ->
         # transform to linear RGB then apply gamma
         (gamma_encode(component) for component in from_XYZ_linear(XYZ))
-    
+
     to_XYZ = (RGB) ->
         # apply reverse gamma then transform to XYZ
         to_XYZ_linear(gamma_decode(component) for component in RGB)
-    
+
     in_gamut = (XYZ) ->
-        (_.every(0 <= comp for comp in XYZ) and 
+        (_.every(0 <= comp for comp in XYZ) and
          _.every(0 <= comp <= 1 for comp in from_XYZ_linear(XYZ)))
-    
+
     return {
         from_XYZ, to_XYZ
         from_XYZ_linear, to_XYZ_linear
@@ -137,7 +138,7 @@ rgb.Converter = (params) ->
 rgb.to_hex = ([R, G, B]) ->
     unless 0 <= R <= 1 and 0 <= G <= 1 and 0 <= B <= 1
         throw new Error('Bad Input: R, G, and B must be in range [0, 1]')
-    
+
     # add 0x1000000 + 0x0rr0000 + 0x000gg00 + 0x0000bb, then convert to a
     # hex string, and replace the leading 1 with a '#'
     return '#' + (
@@ -145,6 +146,7 @@ rgb.to_hex = ([R, G, B]) ->
         round(0xff * R) << 16 |
         round(0xff * G) <<  8 |
         round(0xff * B)).toString(16).slice(1)
+
 
 rgb.from_hex = (hex) ->
     unless /^#?[0-9a-fA-F]{6}$/.test(hex)
@@ -155,4 +157,4 @@ rgb.from_hex = (hex) ->
         (RGB >> 16)       / 0xff # first byte  -> R
         (RGB >> 8 & 0xff) / 0xff # second byte -> G
         (RGB & 0xff)      / 0xff # third byte  -> B
-    ]
+        ]
