@@ -2,6 +2,7 @@ rgb = chromatist.rgb = {}
 {max, pow, round} = Math
 {standard_whitepoints, normalize_chromaticity, normalize_whitepoint} = chromatist.cie
 {Matrix3} = chromatist.matrix3
+{every, isString, isNumber, isFunction} = _
 
 ##### XXX: This versions is somehow broken. The below one works though.
 # RGB_matrix_from_primaries = ({r, g, b, white}) ->
@@ -91,7 +92,7 @@ rgb.Converter = (params) ->
 
     params ?= 'sRGB' # default to sRGB if no space specified
 
-    if _.isString(params) # allow users to call with a color space name
+    if isString(params) # allow users to call with a color space name
         params = RGB_spaces_parameters[params]
         throw new Error('Unrecognized name for RGB space') unless params?
 
@@ -104,11 +105,11 @@ rgb.Converter = (params) ->
         gamma: 2.2
 
     g = params.gamma
-    if _.isNumber(g) # for "simple gamma"
+    if isNumber(g) # for "simple gamma"
         [decoding_gamma, encoding_gamma] = [g, 1 / g]
         gamma_encode = (x) -> pow(x, encoding_gamma)
         gamma_decode = (x) -> pow(x, decoding_gamma)
-    else if (g.length == 2 and _.isFunction(g[0]) and _.isFunction(g[1]))
+    else if (g.length == 2 and isFunction(g[0]) and isFunction(g[1]))
         [gamma_encode, gamma_decode] = g
     else
         throw new Error('Unrecognized gamma')
@@ -126,8 +127,8 @@ rgb.Converter = (params) ->
         to_XYZ_linear(gamma_decode(component) for component in RGB)
 
     in_gamut = (XYZ) ->
-        (_.every(0 <= comp for comp in XYZ) and
-         _.every(0 <= comp <= 1 for comp in from_XYZ_linear(XYZ)))
+        (every(0 <= comp for comp in XYZ) and
+         every(0 <= comp <= 1 for comp in from_XYZ_linear(XYZ)))
 
     return {
         from_XYZ, to_XYZ
