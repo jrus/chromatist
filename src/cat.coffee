@@ -1,18 +1,9 @@
-print = -> console.log arguments
 cat = chromatist.cat = {}
 
 {Matrix3} = chromatist.matrix3
 {normalize_whitepoint} = chromatist.cie
 
-
-
-
 transforms =
-    # 'von kries': [
-    #      .4002,  .7076, -.0808,
-    #     -.2263, 1.1653,  .0457,
-    #      .0,    .0,      .9182]
-    
     'von kries': [ # hunt–pointer–estevez cone fundamental space
          .38971,  .68898, -.07868,
         -.22981, 1.18340,  .04641,
