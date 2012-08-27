@@ -1,5 +1,10 @@
 cie = chromatist.cie = {}
 
+{reduce, isArray} = _
+sum = (list) ->
+    plus = (total, x) -> total + x
+    reduce(list, plus, 0)
+
 standard_whitepoints = cie.standard_whitepoints =
     A:   [109.850, 100,  35.585]
     B:   [ 99.090, 100,  85.324]
@@ -17,7 +22,7 @@ standard_whitepoints = cie.standard_whitepoints =
 cie.normalize_chromaticity = (c) ->
     # normalize so x + y + z = 1. Assume input is either the chromaticity
     # coordinates (x, y), or else a triple (x, y, z) or (X, Y, Z).
-    unless _.isArray(c) and c.length in [2, 3]
+    unless isArray(c) and c.length in [2, 3]
         throw new Error('Unrecognized chromaticity')
     if c.length == 2
         [c_x, c_y] = c
@@ -25,7 +30,7 @@ cie.normalize_chromaticity = (c) ->
             throw new Error('Invalid (x, y) chromaticity coordinates')
         return [c_x, c_y, 1 - c_x - c_y]
     else if c.length == 3
-        return (x / _.sum(c) for x in c) # x + y + z = 1
+        return (x / sum(c) for x in c) # x + y + z = 1
 
 
 cie.normalize_whitepoint = (white) ->
@@ -36,7 +41,7 @@ cie.normalize_whitepoint = (white) ->
         white = standard_whitepoints.D65 # if white is undefined, assume D65
     else if white of standard_whitepoints
         white = standard_whitepoints[white]
-    else if _.isArray(white)
+    else if isArray(white)
         if white.length not in [2, 3]
             throw new Error('Unrecognized whitepoint')
         if white.length == 2

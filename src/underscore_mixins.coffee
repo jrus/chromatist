@@ -2,7 +2,6 @@
 
 
 _.mixin
-    sum: (list) -> _.reduce(list, ((total, x) -> total + x), 0)
 
     # return an Array copy of the list cycled by n;
     # only creates 2 lists: efficient in time and space
