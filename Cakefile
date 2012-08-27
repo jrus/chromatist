@@ -17,6 +17,7 @@ sources = [
     'underscore_mixins'
     'matrix3'
     'cie'
+    'cat'
     'rgb'
     'hsl_hsv'
     'cielab'
