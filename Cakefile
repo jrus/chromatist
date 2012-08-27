@@ -6,9 +6,9 @@ log = console.log
 
 # ANSI Terminal Colors.
 ansi =
-    boldblue  : '\033[1;34m'
-    boldgreen : '\033[1;32m'
-    reset     : '\033[0m'
+    boldblue  : '\x1b[1;34m'
+    boldgreen : '\x1b[1;32m'
+    reset     : '\x1b[0m'
 
 source_dir = 'src/'
 index_source = 'chromatist'
