@@ -3,12 +3,12 @@ Chromatist JavaScript Library
 
 The Chromatist library aims to pull together implementations of useful color space math, for use both in the browser and in node-based servers. In particular, it currently has implementations of RGB ⇔ CIEXYZ conversions (in `chromatist.rgb`), CIECAM02 (in `chromatist.ciecam`), CIELAB (in `chromatist.cielab`), and HSL and HSV (in `chromatist.hsl` and `chromatist.hsv`). There is a simple gamut mapping tool in `chromatist.gamut` which finds a point of lower chroma but the same hue and lightness within the sRGB gamut using a bisection algorithm. `chromatist.matrix3` includes a class for 3 by 3 matrices, and `chromatist.mathutils` includes a few useful math routines.
 
-This is an early release: the API is likely to change somewhat going forward
+This is an early release: the API is likely to change somewhat going forward.
 
 Examples
 --------
 
-Imagine we want to convert a blue color taken from a website from RGB to CIECAM02 space, take the color with complementary hue, 1.5 times the chroma, and lightness 80, and then convert that result back to RGB.
+Imagine we want to convert a blue color ![#14214d](http://dummyimage.com/15/14214d/14214d) taken from a website from RGB to CIECAM02 space, take the color with complementary hue, 1.5 times the chroma, and lightness 80, and then convert that result back to RGB.
 
 First we need to set up converters for RGB and CIECAM02. By default, the CIECAM02 converter uses a 'D65' white point, just as sRGB does, so we can leave that parameter implicit.
 
@@ -17,7 +17,7 @@ First we need to set up converters for RGB and CIECAM02. By default, the CIECAM0
     ...   adaptive_luminance: 50,
     ...   discounting: true })
 
-Next we can define our color from hex, and convert it to XYZ space.
+Next we can define our color ![#14214d](http://dummyimage.com/15/14214d/14214d) from hex, and convert it to XYZ space.
 
     >>> rgb_j = chromatist.rgb.from_hex('#14214D')    // a nice dark blue
     [ 0.0784, 0.1294, 0.3020 ]
@@ -40,3 +40,4 @@ Finally we can convert our new color back to RGB and print it out in 8-bit hexad
     >>> hex_k = chromatist.rgb.to_hex(rgb_k)
     '#fdcc58'    // a nice bright yellow
 
+![#fdcc58](http://dummyimage.com/15/fdcc58/fdcc58)
